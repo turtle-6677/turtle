@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>절댓값 그래프 4종 그리기</title>
+<style>
+:root{
+  --ink:#1c2540; --sub:#5b6680; --line:#dfe4ee; --paper:#f6f4ee; --card:#ffffff;
+  --blue:#2563eb; --green:#059669; --red:#dc2626; --orange:#ea580c; --purple:#7c3aed;
+  --accent:#1c2540;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  line-height:1.6;word-break:keep-all}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 16px 64px}
+header h1{font-size:clamp(24px,4vw,34px);margin:0 0 6px;letter-spacing:-.02em}
+header p{margin:0;color:var(--sub)}
+.math{font-family:"Cambria Math","Times New Roman",serif;font-style:italic;white-space:nowrap}
+.tip{margin:18px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tip div{background:var(--ink);color:#fff;border-radius:12px;padding:12px 14px;font-size:15px}
+.tip b{color:#ffd166}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:18px}
+h2{font-size:18px;margin:0 0 12px;letter-spacing:-.01em}
+h2 small{font-weight:400;color:var(--sub);font-size:13px;margin-left:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;color:inherit;cursor:pointer}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.custom{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.custom input{flex:1;min-width:180px;font:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:10px}
+.custom .err{color:var(--red);font-size:13px;width:100%}
+.hint{color:var(--sub);font-size:13px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.tab{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 6px;text-align:center}
+.tab .math{font-size:18px;display:block}
+.tab span.s{font-size:12px;color:var(--sub)}
+.tab[aria-selected="true"]{border-color:var(--purple);box-shadow:0 0 0 2px var(--purple) inset;background:#faf7ff}
+.stage{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}
+.canvasBox{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+canvas{display:block;width:100%;aspect-ratio:1/1}
+.eq{font-size:20px;margin:0 0 8px}
+.eq .math{font-size:22px;color:var(--purple)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--sub);margin-top:8px}
+.legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px}
+.legend i.d{border-top-style:dashed}
+.idea{background:#faf7ff;border-left:4px solid var(--purple);border-radius:8px;padding:10px 12px;font-size:15px}
+.idea b{color:var(--purple)}
+ol.steps{list-style:none;margin:12px 0;padding:0;display:grid;gap:8px}
+ol.steps li{border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;display:grid;grid-template-columns:28px 1fr;gap:8px;opacity:.55}
+ol.steps li .n{width:26px;height:26px;border-radius:50%;background:var(--line);display:grid;place-items:center;font-weight:700;font-size:13px}
+ol.steps li.on{opacity:1;border-color:var(--ink);background:#f8fafc}
+ol.steps li.on .n{background:var(--ink);color:#fff}
+ol.steps li.done{opacity:.85}
+ol.steps li.done .n{background:var(--green);color:#fff}
+ol.steps li strong{display:block}
+ol.steps li p{margin:2px 0 0;font-size:13.5px;color:var(--sub);display:none}
+ol.steps li.on p{display:block}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--ink);background:#fff;border-radius:10px;padding:8px 14px;font-weight:600}
+.btn.pri{background:var(--ink);color:#fff}
+.btn:disabled{opacity:.35;cursor:default}
+label.chk{font-size:13.5px;color:var(--sub);display:flex;gap:6px;align-items:center;margin-top:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mini{border:1px solid var(--line);border-radius:12px;background:#fff;padding:0;overflow:hidden;text-align:center}
+.mini .cap{padding:6px 4px 8px;font-size:15px}
+.mini:hover{border-color:var(--purple)}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:14.5px}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+th{font-size:13px;color:var(--sub);font-weight:600}
+.quiz{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:18px;align-items:start}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.opt{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 6px;font-size:18px}
+.opt.ok{background:#ecfdf5;border-color:var(--green)}
+.opt.no{background:#fef2f2;border-color:var(--red)}
+.fb{min-height:48px;font-size:14.5px}
+.score{color:var(--sub);font-size:13.5px}
+@media (max-width:760px){
+  .stage,.quiz{grid-template-columns:1fr}
+  .tabs,.grid4{grid-template-columns:1fr 1fr}
+  .tip{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>절댓값 그래프 4종 그리기</h1>
+  <p>원래 그래프 <span class="math">y = f(x)</span>에서 출발해 한 단계씩 따라 그려 보세요.</p>
+  <div class="tip">
+    <div><b>식 전체</b>에 절댓값 <span class="math">|f(x)|</span> → 지우지 않고 <b>접어 올린다</b></div>
+    <div><b>문자</b>에 절댓값 <span class="math">|x|, |y|</span> → 양수 쪽만 남기고 <b>지운 뒤 대칭 복사</b></div>
+  </div>
+</header>
+
+<section>
+  <h2>① 함수 고르기 <small>f(x)를 바꿔 가며 같은 규칙이 통하는지 확인</small></h2>
+  <div class="chips" id="chips"></div>
+  <div class="custom">
+    <span class="math">f(x) =</span>
+    <input id="expr" placeholder="직접 입력: x^2-4x+3, sqrt(x+2)-1, 2/(x-1)" autocomplete="off" spellcheck="false">
+    <button class="btn" id="apply">적용</button>
+    <div class="err" id="err"></div>
+  </div>
+</section>
+
+<section>
+  <h2>② 따라 그리기</h2>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="stage">
+    <div>
+      <div class="canvasBox"><canvas id="main"></canvas></div>
+      <div class="legend">
+        <span><i style="border-color:var(--blue)"></i>원래 그래프</span>
+        <span><i style="border-color:var(--green)"></i>그대로 두는 부분</span>
+        <span><i class="d" style="border-color:var(--red)"></i>지우는 부분</span>
+        <span><i class="d" style="border-color:var(--orange)"></i>접어 올릴 부분</span>
+        <span><i style="border-color:var(--purple)"></i>대칭이동으로 생긴 부분</span>
+      </div>
+      <label class="chk"><input type="checkbox" id="orig" checked> 원래 그래프 y = f(x)를 연한 점선으로 같이 보기</label>
+    </div>
+    <div>
+      <p class="eq"><span class="math" id="eq"></span></p>
+      <div class="idea" id="idea"></div>
+      <ol class="steps" id="steps"></ol>
+      <div class="ctrl">
+        <button class="btn" id="prev">◀ 이전</button>
+        <button class="btn pri" id="next">다음 ▶</button>
+        <button class="btn" id="replay">↻ 이 단계 다시</button>
+        <button class="btn" id="auto">▶ 자동 재생</button>
+      </div>
+      <p class="hint">키보드 ← → 로도 단계를 넘길 수 있어요.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>③ 한눈에 비교 <small>그림을 누르면 그 그래프의 따라 그리기로 이동</small></h2>
+  <div class="grid4" id="minis"></div>
+  <table>
+    <tr><th>식</th><th>절댓값 위치</th><th>남기는 부분</th><th>하는 일</th></tr>
+    <tr><td class="math">y = |f(x)|</td><td>식 전체</td><td>전부 (지우지 않음)</td><td>x축 아래 부분을 x축 대칭으로 <b>접어 올림</b></td></tr>
+    <tr><td class="math">y = f(|x|)</td><td>x</td><td>x ≥ 0 (y축 오른쪽)</td><td>왼쪽을 지우고 <b>y축 대칭</b> 복사</td></tr>
+    <tr><td class="math">|y| = f(x)</td><td>y</td><td>y ≥ 0 (x축 위쪽)</td><td>아래를 지우고 <b>x축 대칭</b> 복사</td></tr>
+    <tr><td class="math">|y| = f(|x|)</td><td>x와 y</td><td>x ≥ 0, y ≥ 0 (제1사분면)</td><td>나머지를 지우고 <b>y축, x축 대칭</b> 복사</td></tr>
+  </table>
+  <p class="hint">헷갈리는 짝: <span class="math">y = |f(x)|</span>와 <span class="math">|y| = f(x)</span>는 둘 다 x축이 기준이지만, 앞의 것은 아래 부분이 위로 <b>옮겨 가고</b>, 뒤의 것은 아래 부분이 <b>사라지고</b> 위 부분이 아래로 복사됩니다.</p>
+</section>
+
+<section>
+  <h2>④ 퀴즈 <small>보라색 그래프의 식은?</small></h2>
+  <div class="quiz">
+    <div class="canvasBox"><canvas id="qc"></canvas></div>
+    <div>
+      <p style="margin:0">점선은 <span class="math">y = f(x)</span>, &nbsp;<span class="math">f(x) = <span id="qf"></span></span></p>
+      <div class="opts" id="opts"></div>
+      <div class="fb" id="fb"></div>
+      <div class="ctrl">
+        <button class="btn pri" id="qnext">다음 문제</button>
+        <button class="btn" id="qshow">이 문제 따라 그리기</button>
+        <span class="score" id="score"></span>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+"use strict";
+var C={blue:'#2563eb',green:'#059669',red:'#dc2626',orange:'#ea580c',purple:'#7c3aed',ghost:'#94a3b8'};
+var PRESETS=[
+  {label:'x² − 2x − 3',expr:'x^2-2x-3'},
+  {label:'x² − 4x + 3',expr:'x^2-4x+3'},
+  {label:'−x² + 2x + 3',expr:'-x^2+2x+3'},
+  {label:'x − 2',expr:'x-2'},
+  {label:'√(x+3) − 1',expr:'sqrt(x+3)-1'}
+];
+var MODES=[
+ {name:'y = |f(x)|',short:'접어 올리기',
+  idea:'<b>핵심</b> 절댓값이 f(x) 전체를 감싸므로 y는 음수가 될 수 없어요. f(x) ≥ 0인 곳은 그대로, f(x) &lt; 0인 곳은 −f(x)가 되어 <b>x축 위로 뒤집혀</b> 올라갑니다.',
+  steps:[
+   ['y = f(x)를 그린다','절댓값을 떼어 낸 원래 그래프부터 그립니다.'],
+   ['x축 아래 부분을 찾는다','x축 위(y ≥ 0)는 이미 양수라 그대로 둡니다. 색칠된 아래쪽(y &lt; 0)만 바뀝니다.'],
+   ['아래 부분을 x축에 대해 접어 올린다','지우는 게 아니라 종이를 x축에서 접듯이 위로 올립니다. 그래프는 끊어지지 않아요.']
+  ]},
+ {name:'y = f(|x|)',short:'오른쪽을 왼쪽에 복사',
+  idea:'<b>핵심</b> x ≥ 0이면 |x| = x라서 원래 그래프와 똑같아요. 그리고 x 자리에 −x를 넣어도 |−x| = |x|로 값이 같으니 그래프는 <b>y축 대칭</b>입니다.',
+  steps:[
+   ['y = f(x)를 그린다','절댓값을 떼어 낸 원래 그래프부터 그립니다.'],
+   ['x ≥ 0 부분만 남기고 왼쪽은 지운다','색칠된 y축 오른쪽이 남는 부분입니다. 원래 그래프의 왼쪽(x &lt; 0)은 버립니다.'],
+   ['남긴 부분을 y축에 대해 대칭으로 복사한다','오른쪽 그래프를 거울(y축)에 비춘 모양이 왼쪽에 생깁니다.']
+  ]},
+ {name:'|y| = f(x)',short:'위쪽을 아래쪽에 복사',
+  idea:'<b>핵심</b> y ≥ 0이면 |y| = y라서 원래 그래프와 똑같아요. 점 (x, y)가 그래프 위에 있으면 (x, −y)도 있으니 <b>x축 대칭</b>입니다. f(x) &lt; 0인 곳은 |y|가 음수일 수 없어 그래프가 없어요.',
+  steps:[
+   ['y = f(x)를 그린다','절댓값을 떼어 낸 원래 그래프부터 그립니다.'],
+   ['y ≥ 0 부분만 남기고 아래쪽은 지운다','색칠된 x축 위쪽이 남는 부분입니다. x축 아래 부분은 접는 게 아니라 버립니다.'],
+   ['남긴 부분을 x축에 대해 대칭으로 복사한다','위쪽 그래프를 거울(x축)에 비춘 모양이 아래에 생깁니다.']
+  ]},
+ {name:'|y| = f(|x|)',short:'제1사분면을 네 곳에 복사',
+  idea:'<b>핵심</b> x ≥ 0, y ≥ 0이면 절댓값이 모두 그냥 벗겨져 원래 그래프와 같아요. x에도 y에도 절댓값이 있으니 <b>y축 대칭이면서 x축 대칭</b>입니다.',
+  steps:[
+   ['y = f(x)를 그린다','절댓값을 떼어 낸 원래 그래프부터 그립니다.'],
+   ['제1사분면(x ≥ 0, y ≥ 0) 부분만 남긴다','색칠된 영역 안의 그래프만 남기고 나머지는 모두 지웁니다. 축 위의 점은 포함해요.'],
+   ['y축에 대해 대칭으로 복사한다','|x| 때문에 y축 대칭. 제2사분면에 같은 모양이 생깁니다.'],
+   ['x축에 대해 대칭으로 복사한다','|y| 때문에 x축 대칭. 위쪽 전체가 아래로 복사되어 완성됩니다.']
+  ]}
+];
+var KEEP=[
+  function(x,y){return y>=0;},
+  function(x,y){return x>=0;},
+  function(x,y){return y>=0;},
+  function(x,y){return x>=0&&y>=0;}
+];
+
+function compile(src){
+  var s=String(src).toLowerCase().replace(/\s+/g,'').replace(/−/g,'-').replace(/²/g,'^2').replace(/³/g,'^3')
+    .replace(/√/g,'sqrt').replace(/×/g,'*').replace(/÷/g,'/');
+  if(!s) throw new Error('empty');
+  var rest=s.replace(/sqrt|abs|sin|cos/g,'');
+  if(!/^[0-9x+\-*\/().^]*$/.test(rest)) throw new Error('bad');
+  s=s.replace(/(\d|x|\))(?=(x|\(|sqrt|abs|sin|cos))/g,'$1*');
+  s=s.replace(/(^|\()-/g,function(m,p){return p+'0-';});
+  s=s.replace(/\^/g,'**').replace(/sqrt|abs|sin|cos/g,function(m){return 'Math.'+m;});
+  var fn=new Function('x','return ('+s+');');
+  var ok=false;
+  for(var x=-6;x<=6;x+=0.5){var y=fn(x); if(typeof y==='number'&&isFinite(y)){ok=true;break;}}
+  if(!ok) throw new Error('nan');
+  return fn;
+}
+function eqText(mode,L){
+  var A=L.replace(/x/g,'|x|');
+  return [ 'y = |'+L+'|', 'y = '+A, '|y| = '+L, '|y| = '+A ][mode];
+}
+
+/* ---------- drawing ---------- */
+function view(canvas,R){
+  var dpr=window.devicePixelRatio||1, w=canvas.clientWidth, h=canvas.clientHeight||w;
+  if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
+  var ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  var u=w/(2*R);
+  return {ctx:ctx,w:w,h:h,u:u,R:R,Ry:h/2/u,X:function(x){return w/2+x*u;},Y:function(y){return h/2-y*u;}};
+}
+function grid(v,mini){
+  var c=v.ctx,i,p;
+  c.clearRect(0,0,v.w,v.h); c.fillStyle='#fff'; c.fillRect(0,0,v.w,v.h);
+  c.lineWidth=1; c.strokeStyle='#e9edf4'; c.beginPath();
+  for(i=-Math.floor(v.R);i<=v.R;i++){p=Math.round(v.X(i))+.5;c.moveTo(p,0);c.lineTo(p,v.h);}
+  for(i=-Math.floor(v.Ry);i<=v.Ry;i++){p=Math.round(v.Y(i))+.5;c.moveTo(0,p);c.lineTo(v.w,p);}
+  c.stroke();
+  c.strokeStyle='#334155'; c.lineWidth=mini?1:1.5; c.beginPath();
+  c.moveTo(0,v.Y(0));c.lineTo(v.w,v.Y(0));c.moveTo(v.X(0),0);c.lineTo(v.X(0),v.h);c.stroke();
+  if(mini) return;
+  c.fillStyle='#64748b'; c.font='11px system-ui,sans-serif';
+  var st=v.u>=30?1:2;
+  c.textAlign='center';
+  for(i=-Math.floor(v.R)+1;i<v.R;i+=1){ if(i!==0&&i%st===0) c.fillText(i,v.X(i),v.Y(0)+14); }
+  c.textAlign='right';
+  for(i=-Math.floor(v.Ry)+1;i<v.Ry;i+=1){ if(i!==0&&i%st===0) c.fillText(i,v.X(0)-6,v.Y(i)+4); }
+  c.fillText('O',v.X(0)-6,v.Y(0)+14);
+  c.font='italic 14px "Times New Roman",serif'; c.fillStyle='#334155';
+  c.fillText('x',v.w-6,v.Y(0)-8); c.textAlign='left'; c.fillText('y',v.X(0)+8,14);
+}
+function shade(v,mode,a){
+  var c=v.ctx,cx=v.X(0),cy=v.Y(0);
+  c.save(); c.globalAlpha=a;
+  c.fillStyle=mode===0?'rgba(234,88,12,.10)':'rgba(5,150,105,.10)';
+  if(mode===0) c.fillRect(0,cy,v.w,v.h-cy);
+  if(mode===1) c.fillRect(cx,0,v.w-cx,v.h);
+  if(mode===2) c.fillRect(0,0,v.w,cy);
+  if(mode===3) c.fillRect(cx,0,v.w-cx,cy);
+  c.restore();
+}
+function mirror(v,axis,a){
+  var c=v.ctx; c.save(); c.globalAlpha=a; c.strokeStyle=C.purple; c.lineWidth=3; c.setLineDash([2,5]); c.beginPath();
+  if(axis==='x'){c.moveTo(0,v.Y(0));c.lineTo(v.w,v.Y(0));} else {c.moveTo(v.X(0),0);c.lineTo(v.X(0),v.h);}
+  c.stroke(); c.restore();
+}
+function part(v,f,o){
+  var c=v.ctx, step=v.R/v.w, lim=v.Ry+2, pen=false, py=0, x, y, p;
+  if(o.alpha!==undefined&&o.alpha<=0) return;
+  c.save(); c.globalAlpha=o.alpha===undefined?1:o.alpha; c.strokeStyle=o.color; c.lineWidth=o.width||3;
+  c.setLineDash(o.dash||[]); c.lineJoin='round'; c.lineCap='round'; c.beginPath();
+  for(x=-v.R;x<=v.R+1e-9;x+=step){
+    y=f(x);
+    if(!(typeof y==='number'&&isFinite(y)&&Math.abs(y)<lim*3&&(!o.cond||o.cond(x,y)))){pen=false;continue;}
+    if(pen&&Math.abs(y-py)>lim) pen=false;
+    p=o.T?o.T(x,y):[x,y];
+    if(pen) c.lineTo(v.X(p[0]),v.Y(p[1])); else c.moveTo(v.X(p[0]),v.Y(p[1]));
+    pen=true; py=y;
+  }
+  c.stroke(); c.restore();
+}
+function scene(v,f,mode,step,t,showOrig,mini,mono){
+  grid(v,mini);
+  var W=mini?2.2:3.2, keep=KEEP[mode], rest=function(x,y){return !keep(x,y);};
+  var kc=mono?C.purple:C.green, cc=C.purple;
+  var flipX=function(x,y){return [x*(1-2*t),y];}, flipY=function(x,y){return [x,y*(1-2*t)];};
+  if(step===0){ part(v,f,{color:C.blue,width:W}); return; }
+  if(step===1){
+    shade(v,mode,t);
+    part(v,f,{color:C.blue,width:W,alpha:1-t});
+    part(v,f,{cond:keep,color:C.green,width:W,alpha:t});
+    part(v,f,{cond:rest,color:mode===0?C.orange:C.red,width:W,dash:[7,6],alpha:t});
+    return;
+  }
+  if(showOrig) part(v,f,{color:C.ghost,width:1.4,dash:[3,5]});
+  if(!mini) mirror(v,(mode===1||(mode===3&&step===2))?'y':'x',.55);
+  if(mode===0){
+    part(v,f,{cond:keep,color:kc,width:W});
+    part(v,f,{cond:rest,color:t<1?C.orange:cc,width:W,T:flipY});
+    return;
+  }
+  if(step===2) part(v,f,{cond:rest,color:C.red,width:W,dash:[7,6],alpha:1-t});
+  part(v,f,{cond:keep,color:kc,width:W});
+  if(mode===1) part(v,f,{cond:keep,color:cc,width:W,T:flipX});
+  if(mode===2) part(v,f,{cond:keep,color:cc,width:W,T:flipY});
+  if(mode===3){
+    if(step===2){ part(v,f,{cond:keep,color:cc,width:W,T:flipX}); }
+    else{
+      part(v,f,{cond:keep,color:cc,width:W,T:function(x,y){return [-x,y];}});
+      part(v,f,{cond:keep,color:cc,width:W,T:flipY});
+      part(v,f,{cond:keep,color:cc,width:W,T:function(x,y){return [-x,y*(1-2*t)];}});
+    }
+  }
+}
+
+/* ---------- state & UI ---------- */
+var $=function(id){return document.getElementById(id);};
+var S={fi:0,f:compile(PRESETS[0].expr),label:PRESETS[0].label,mode:0,step:0,t:1,showOrig:true};
+var raf=0, token=0, R=7;
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var miniCanvas=[];
+
+function renderMain(){ scene(view($('main'),R),S.f,S.mode,S.step,S.t,S.showOrig,false,false); }
+function renderMinis(){
+  for(var m=0;m<4;m++) scene(view(miniCanvas[m],R),S.f,m,MODES[m].steps.length-1,1,true,true,true);
+}
+function ui(){
+  var M=MODES[S.mode], i, tabs=$('tabs').children, lis=$('steps').children;
+  for(i=0;i<4;i++) tabs[i].setAttribute('aria-selected',i===S.mode?'true':'false');
+  for(i=0;i<lis.length;i++) lis[i].className=i===S.step?'on':(i<S.step?'done':'');
+  $('prev').disabled=S.step===0; $('next').disabled=S.step===M.steps.length-1;
+  $('eq').textContent=eqText(S.mode,S.label);
+  var chips=$('chips').children; for(i=0;i<chips.length;i++) chips[i].setAttribute('aria-pressed',i===S.fi?'true':'false');
+}
+function buildSteps(){
+  var M=MODES[S.mode], ol=$('steps'); ol.innerHTML='';
+  M.steps.forEach(function(s,i){
+    var li=document.createElement('li');
+    li.innerHTML='<span class="n">'+(i+1)+'</span><div><strong>'+s[0]+'</strong><p>'+s[1]+'</p></div>';
+    li.onclick=function(){go(i);};
+    ol.appendChild(li);
+  });
+  $('idea').innerHTML=M.idea;
+}
+function animateStep(step,done){
+  cancelAnimationFrame(raf); S.step=step; ui();
+  if(step===0||reduce){S.t=1;renderMain();if(done)done();return;}
+  var st=performance.now(), dur=step===1?650:1200;
+  (function tick(now){
+    var p=Math.min(1,Math.max(0,(now-st)/dur));
+    S.t=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    renderMain();
+    if(p<1) raf=requestAnimationFrame(tick); else if(done) done();
+  })(st);
+}
+function go(step){ token++; animateStep(step); }
+function autoplay(){
+  var my=++token, i=0, n=MODES[S.mode].steps.length;
+  (function next(){
+    if(my!==token) return;
+    animateStep(i,function(){ i++; if(i<n) setTimeout(next,850); });
+  })();
+}
+function setMode(m){ token++; cancelAnimationFrame(raf); S.mode=m; S.step=0; S.t=1; buildSteps(); ui(); renderMain(); }
+function setFunc(fi,f,label){ token++; cancelAnimationFrame(raf); S.fi=fi; S.f=f; S.label=label; S.step=0; S.t=1; ui(); renderMain(); renderMinis(); }
+
+// build chips
+PRESETS.forEach(function(p,i){
+  var b=document.createElement('button'); b.className='chip math'; b.textContent=p.label;
+  b.onclick=function(){ $('err').textContent=''; setFunc(i,compile(p.expr),p.label); };
+  $('chips').appendChild(b);
+});
+function applyCustom(){
+  var raw=$('expr').value.trim();
+  try{ var f=compile(raw); $('err').textContent=''; setFunc(-1,f,raw.replace(/\*/g,'')); }
+  catch(e){ $('err').textContent='식을 읽을 수 없어요. 예: x^2-4x+3,  sqrt(x+2)-1,  2/(x-1),  -(x-1)^2+4'; }
+}
+$('apply').onclick=applyCustom;
+$('expr').addEventListener('keydown',function(e){ if(e.key==='Enter') applyCustom(); e.stopPropagation(); });
+
+// tabs & minis
+MODES.forEach(function(M,i){
+  var b=document.createElement('button'); b.className='tab'; b.setAttribute('role','tab');
+  b.innerHTML='<span class="math">'+M.name+'</span><span class="s">'+M.short+'</span>';
+  b.onclick=function(){setMode(i);};
+  $('tabs').appendChild(b);
+  var m=document.createElement('button'); m.className='mini';
+  var cv=document.createElement('canvas'); m.appendChild(cv);
+  var cap=document.createElement('div'); cap.className='cap math'; cap.textContent=M.name; m.appendChild(cap);
+  m.onclick=function(){ setMode(i); $('tabs').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}); autoplay(); };
+  $('minis').appendChild(m); miniCanvas.push(cv);
+});
+
+$('prev').onclick=function(){ if(S.step>0) go(S.step-1); };
+$('next').onclick=function(){ if(S.step<MODES[S.mode].steps.length-1) go(S.step+1); };
+$('replay').onclick=function(){ go(S.step); };
+$('auto').onclick=autoplay;
+$('orig').onchange=function(){ S.showOrig=this.checked; renderMain(); };
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'){ $('next').click(); } else if(e.key==='ArrowLeft'){ $('prev').click(); }
+});
+
+/* ---------- quiz ---------- */
+var Q={fi:-1,mode:-1,done:false,right:0,total:0};
+function qRender(){ scene(view($('qc'),R),compile(PRESETS[Q.fi].expr),Q.mode,MODES[Q.mode].steps.length-1,1,true,true,true); }
+function qNew(){
+  var fi,mode;
+  do{ fi=Math.floor(Math.random()*PRESETS.length); mode=Math.floor(Math.random()*4); }while(fi===Q.fi&&mode===Q.mode);
+  Q.fi=fi; Q.mode=mode; Q.done=false;
+  $('qf').textContent=PRESETS[fi].label; $('fb').innerHTML='';
+  var opts=$('opts').children; for(var i=0;i<4;i++) opts[i].className='opt math';
+  qRender();
+}
+var WHY=[
+  'x축 아래로 내려가는 부분이 없고, 원래 그래프의 아래 부분이 위로 접혀 있어요.',
+  '그래프가 y축 대칭이고, 오른쪽(x ≥ 0)은 원래 그래프와 같아요.',
+  '그래프가 x축 대칭이고, 위쪽(y ≥ 0)은 원래 그래프와 같아요.',
+  '그래프가 x축, y축 모두에 대칭이고, 제1사분면만 원래 그래프와 같아요.'
+];
+MODES.forEach(function(M,i){
+  var b=document.createElement('button'); b.className='opt math'; b.textContent=M.name;
+  b.onclick=function(){
+    if(Q.done) return; Q.done=true; Q.total++;
+    var opts=$('opts').children; opts[Q.mode].className='opt math ok';
+    if(i===Q.mode){ Q.right++; $('fb').innerHTML='<b style="color:var(--green)">정답!</b> '+WHY[Q.mode]; }
+    else{ b.className='opt math no'; $('fb').innerHTML='<b style="color:var(--red)">아쉬워요.</b> 정답은 <span class="math">'+MODES[Q.mode].name+'</span>. '+WHY[Q.mode]; }
+    $('score').textContent=Q.right+' / '+Q.total+' 정답';
+  };
+  $('opts').appendChild(b);
+});
+$('qnext').onclick=qNew;
+$('qshow').onclick=function(){
+  setFunc(Q.fi,compile(PRESETS[Q.fi].expr),PRESETS[Q.fi].label); setMode(Q.mode);
+  $('tabs').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}); autoplay();
+};
+
+/* ---------- init ---------- */
+buildSteps(); ui(); renderMain(); renderMinis(); qNew();
+var rz=0;
+window.addEventListener('resize',function(){ clearTimeout(rz); rz=setTimeout(function(){ renderMain(); renderMinis(); qRender(); },80); });
+})();
+</script>
+</body>
+</html>
