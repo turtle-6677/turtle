@@ -200,6 +200,7 @@ section.panel[hidden]{display:none}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 .feedback-box.ok{background:var(--green-bg);border:1.5px solid var(--green);color:#064e3b}
 .feedback-box.no{background:var(--red-bg);border:1.5px solid var(--red);color:#7f1d1d}
+.feedback-box.warn{background:var(--orange-bg);border:1.5px solid var(--orange);color:#7c2d12}
 .fb-title{font-size:17px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:6px}
 .fb-desc{font-size:14.5px;line-height:1.5}
 .fb-triangles{
@@ -875,6 +876,31 @@ function hideCheatSheetOnPlay() {
   }
 }
 
+function gcd(x, y) {
+  x = Math.abs(x); y = Math.abs(y);
+  while (y) { var t = y; y = x % y; x = t; }
+  return x;
+}
+
+function findNonCoreValidPythagorean(target, groups, expectedKeys) {
+  for (var i = 0; i < groups.length; i++) {
+    var s = groups[i].slice().sort(function(a, b) { return a - b; });
+    var a = s[0], b = s[1], c = s[2];
+    var key = s.join(",");
+    if (expectedKeys.indexOf(key) !== -1) continue;
+    if (a > 0 && (a * a + b * b === c * c)) {
+      var g = gcd(a, gcd(b, c));
+      return {
+        a: a, b: b, c: c,
+        g: g,
+        baseA: a / g, baseB: b / g, baseC: c / g,
+        hasTarget: (a === target || b === target || c === target)
+      };
+    }
+  }
+  return null;
+}
+
 function diagnoseMistake(target, userKeys, expectedTriples) {
   // 1. Check if user typed "8,16,17" (the classic confusion with 8,15,17!)
   if (userKeys.indexOf("8,16,17") !== -1) {
@@ -957,6 +983,37 @@ function checkQuizAnswer() {
     userKeys.length === expectedKeys.length &&
     userKeys.every(function(k, i) { return k === expectedKeys[i]; })
   );
+
+  // If not an exact match, check if the student entered a valid multiple (e.g., 6,8,10 for 8 or 9,12,15 for 12)
+  if (!isCorrect) {
+    var multInfo = findNonCoreValidPythagorean(target, parsed.groups, expectedKeys);
+    if (multInfo) {
+      fb.className = "feedback-box show warn";
+      $("fbTriangles").innerHTML = "";
+      if (multInfo.g > 1) {
+        var baseStr = "(" + multInfo.baseA + ", " + multInfo.baseB + ", " + multInfo.baseC + ")";
+        var multStr = "(" + multInfo.a + ", " + multInfo.b + ", " + multInfo.c + ")";
+        var calcStr = multInfo.baseA + "×" + multInfo.g + "=" + multInfo.a + ", " +
+                      multInfo.baseB + "×" + multInfo.g + "=" + multInfo.b + ", " +
+                      multInfo.baseC + "×" + multInfo.g + "=" + multInfo.c;
+        fbTitle.innerHTML = "👏 맞긴 맞아요! " + multStr + "도 피타고라스 수가 맞지만, 다시 입력해 볼까요?";
+        fbDesc.innerHTML =
+          "적어준 <b>" + multStr + "</b>은 기본 피타고라스 수인 <b>" + baseStr + "</b>에 똑같이 <b>" + multInfo.g + "배</b>를 해서 만든 '배수'예요! (" + calcStr + ")<br>" +
+          "이 퀴즈에서는 2배·3배 하지 않고 <b>더 이상 약분되지 않는 기본 피타고라스 수 4가지</b>를 외우고 있어요.<br>" +
+          "👉 <b>배수로 만든 수 말고, 원래부터 숫자 " + target + "이(가) 들어있는 기본 쌍</b>으로 다시 입력해 보세요! <span style='font-size:13px;opacity:.9'>(틀린 것이 아니라서 점수는 깎이지 않아요 😊)</span>";
+      } else {
+        var primStr = "(" + multInfo.a + ", " + multInfo.b + ", " + multInfo.c + ")";
+        fbTitle.innerHTML = "👏 오! " + primStr + "도 진짜 피타고라스 수가 맞아요!";
+        fbDesc.innerHTML =
+          "<b>" + primStr + "</b>도 직각삼각형이 되는 피타고라스 수가 맞지만, 이 퀴즈에서는 <b>중2 시험 필수 4가지(3,4,5 / 5,12,13 / 7,24,25 / 8,15,17)</b>를 외우고 있어요.<br>" +
+          "👉 필수 4가지 중에서 <b>숫자 " + target + "</b>이(가) 들어간 것으로 다시 입력해 보세요! <span style='font-size:13px;opacity:.9'>(점수는 깎이지 않아요 😊)</span>";
+      }
+      // Clear input so the student can immediately type the base triple
+      $("ansInput").value = "";
+      updateLivePreview();
+      return;
+    }
+  }
 
   quizState.answered = true;
   var inp = $("ansInput");
