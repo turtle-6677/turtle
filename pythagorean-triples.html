@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>피타고라스 수 4쌍 완벽 암기 퀴즈</title>
+<style>
+:root{
+  --ink:#1c2540; --sub:#5b6680; --line:#dfe4ee; --paper:#f6f4ee; --card:#ffffff;
+  --blue:#2563eb; --blue-bg:#eff6ff;
+  --green:#059669; --green-bg:#ecfdf5;
+  --red:#dc2626; --red-bg:#fef2f2;
+  --orange:#ea580c; --orange-bg:#fff7ed;
+  --purple:#7c3aed; --purple-bg:#faf5ff;
+  --yellow:#ffd166;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+  line-height:1.55;word-break:keep-all;
+}
+.wrap{max-width:760px;margin:0 auto;padding:22px 14px 64px}
+header h1{font-size:clamp(22px,4.5vw,31px);margin:0 0 6px;letter-spacing:-.02em}
+header p{margin:0;color:var(--sub);font-size:15px}
+
+/* Top navigation tabs */
+.nav-tabs{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;
+}
+.nav-tab{
+  border:1.5px solid var(--line);background:#fff;border-radius:12px;
+  padding:11px 8px;text-align:center;font:inherit;font-weight:700;font-size:14.5px;
+  color:var(--sub);cursor:pointer;transition:all .15s ease;
+}
+.nav-tab span.sub{display:block;font-weight:400;font-size:12px;margin-top:2px;color:var(--sub)}
+.nav-tab[aria-selected="true"]{
+  border-color:var(--purple);background:var(--purple-bg);color:var(--ink);
+  box-shadow:0 0 0 1.5px var(--purple) inset;
+}
+.nav-tab[aria-selected="true"] span.sub{color:var(--purple);font-weight:600}
+
+section.panel{
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:18px;margin-top:14px;box-shadow:0 4px 14px rgba(28,37,64,.04);
+}
+section.panel[hidden]{display:none}
+
+/* Study drawer inside Quiz */
+.study-toggle-bar{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  background:#f8fafc;border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;margin-bottom:14px;font-size:14px;
+}
+.study-toggle-bar b{color:var(--purple)}
+.btn-sm{
+  border:1px solid var(--ink);background:#fff;color:var(--ink);
+  border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  white-space:nowrap;
+}
+.btn-sm.active{background:var(--ink);color:#fff}
+
+.cheat-box{
+  background:#faf7ff;border:1.5px dashed var(--purple);border-radius:14px;
+  padding:14px;margin-bottom:16px;
+}
+.cheat-box[hidden]{display:none}
+.cheat-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px;
+}
+.cheat-item{
+  background:#fff;border:1px solid #e9d5ff;border-radius:10px;padding:10px 12px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.cheat-item .nums{font-size:18px;font-weight:800;letter-spacing:.02em;color:var(--ink)}
+.cheat-item .nums em{font-style:normal;color:var(--red);text-decoration:underline;text-underline-offset:3px}
+.cheat-item .sq{font-size:12px;color:var(--sub)}
+.cheat-tip{
+  margin-top:10px;background:var(--ink);color:#fff;border-radius:10px;
+  padding:10px 12px;font-size:13.5px;
+}
+.cheat-tip b{color:var(--yellow)}
+
+/* Status bar */
+.status-bar{
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+  margin-bottom:12px;font-size:13.5px;color:var(--sub);font-weight:600;
+}
+.badges{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.badge{
+  background:#f1f5f9;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700;color:var(--ink);
+}
+.badge.streak{background:var(--orange-bg);color:var(--orange)}
+.badge.score{background:var(--blue-bg);color:var(--blue)}
+.progress-track{
+  width:100%;height:7px;background:#eef2f7;border-radius:999px;overflow:hidden;margin-bottom:16px;
+}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));
+  width:0%;transition:width .25s ease;
+}
+
+/* Main prompt card */
+.prompt-box{
+  text-align:center;background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);
+  border:1.5px solid var(--line);border-radius:16px;padding:18px 14px;position:relative;
+}
+.prompt-label{font-size:14px;color:var(--sub);font-weight:600;margin-bottom:4px}
+.prompt-number{
+  font-size:clamp(54px,13vw,76px);font-weight:900;line-height:1.05;color:var(--ink);
+  letter-spacing:-.03em;margin:4px 0 8px;
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:110px;height:96px;padding:0 24px;
+  background:#fff;border:2.5px solid var(--ink);border-radius:20px;
+  box-shadow:0 4px 0 var(--ink);
+}
+.prompt-number.pop{animation:popIn .22s cubic-bezier(.2,1.3,.4,1)}
+@keyframes popIn{
+  0%{transform:scale(.82);opacity:.5}
+  100%{transform:scale(1);opacity:1}
+}
+.prompt-guide{
+  font-size:14.5px;color:var(--ink);font-weight:600;margin:6px 0 0;
+}
+.prompt-subguide{
+  font-size:12.5px;color:var(--sub);margin:3px 0 0;
+}
+.prompt-subguide code{
+  background:#fff;border:1px solid var(--line);border-radius:5px;
+  padding:1px 6px;font-family:inherit;font-weight:700;color:var(--purple);
+}
+
+/* Live parsed preview pills */
+.preview-row{
+  display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;
+  min-height:38px;margin:12px 0 8px;
+}
+.pair-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--purple-bg);border:1.5px solid var(--purple);color:var(--ink);
+  border-radius:999px;padding:4px 12px;font-size:15px;font-weight:700;
+}
+.pair-pill .tag{
+  font-size:11px;font-weight:700;color:#fff;background:var(--purple);
+  border-radius:999px;padding:1px 7px;margin-right:3px;
+}
+.pair-pill.incomplete{
+  background:#f8fafc;border-color:#cbd5e1;border-style:dashed;color:var(--sub);
+}
+.pair-pill.incomplete .tag{background:#94a3b8}
+.preview-placeholder{font-size:13px;color:#94a3b8}
+
+/* Answer Input Area */
+.input-row{
+  display:flex;gap:8px;margin-bottom:10px;
+}
+.ans-input{
+  flex:1;width:100%;font:inherit;font-size:22px;font-weight:800;
+  text-align:center;letter-spacing:.04em;
+  padding:11px 14px;border:2px solid var(--ink);border-radius:14px;
+  background:#fff;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.ans-input:focus{
+  border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.16);
+}
+.ans-input.ok{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.ans-input.no{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+
+/* Custom Touch Keypad */
+.keypad{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:7px;
+  max-width:420px;margin:0 auto;user-select:none;
+}
+.key{
+  border:1.5px solid var(--line);background:#fff;border-radius:12px;
+  padding:12px 6px;font:inherit;font-size:20px;font-weight:800;color:var(--ink);
+  cursor:pointer;box-shadow:0 2px 0 var(--line);transition:transform .05s,background .1s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;
+}
+.key:active{transform:translateY(2px);box-shadow:none;background:#f1f5f9}
+.key small{font-size:11px;font-weight:600;color:var(--sub);margin-top:2px}
+.key.sym{background:#f8fafc;color:var(--purple);border-color:#d8b4fe}
+.key.sym small{color:var(--purple)}
+.key.act{background:#f1f5f9;font-size:15px;font-weight:700;padding:12px 4px}
+.key.submit{
+  grid-column:span 2;background:var(--ink);color:#fff;border-color:var(--ink);
+  box-shadow:0 2px 0 #0f172a;font-size:17px;
+}
+.key.submit:active{background:#334155}
+.key.submit.next-mode{
+  background:var(--blue);border-color:var(--blue);box-shadow:0 2px 0 #1d4ed8;
+}
+
+/* Feedback Box */
+.feedback-box{
+  margin-top:14px;border-radius:14px;padding:14px;font-size:15px;display:none;
+}
+.feedback-box.show{display:block;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.feedback-box.ok{background:var(--green-bg);border:1.5px solid var(--green);color:#064e3b}
+.feedback-box.no{background:var(--red-bg);border:1.5px solid var(--red);color:#7f1d1d}
+.fb-title{font-size:17px;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.fb-desc{font-size:14.5px;line-height:1.5}
+.fb-triangles{
+  display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;
+}
+.mini-tri-card{
+  background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:10px;
+  padding:8px 12px;display:flex;align-items:center;gap:10px;flex:1;min-width:210px;
+}
+.mini-tri-card canvas{width:76px;height:58px;flex-shrink:0}
+.mini-tri-info .t-pair{font-size:17px;font-weight:800;color:var(--ink)}
+.mini-tri-info .t-eq{font-size:12.5px;color:var(--sub)}
+
+/* Round Complete Screen */
+.result-box{
+  text-align:center;padding:18px 10px;
+}
+.result-box[hidden]{display:none}
+.result-grade{font-size:52px;margin-bottom:4px}
+.result-title{font-size:24px;font-weight:900;margin:0 0 6px}
+.result-sub{color:var(--sub);font-size:15px;margin:0 0 18px}
+.stat-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;
+}
+.stat-card{
+  background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px 8px;
+}
+.stat-card .v{font-size:22px;font-weight:900;color:var(--ink)}
+.stat-card .k{font-size:12.5px;color:var(--sub);margin-top:2px}
+.weak-box{
+  background:var(--orange-bg);border:1px solid #fed7aa;border-radius:12px;
+  padding:12px 14px;text-align:left;margin-bottom:16px;font-size:14px;
+}
+.weak-box b{color:var(--orange)}
+.result-actions{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+}
+.btn-lg{
+  border:1.5px solid var(--ink);background:#fff;color:var(--ink);
+  border-radius:12px;padding:12px 18px;font:inherit;font-size:15.5px;font-weight:800;
+  cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+}
+.btn-lg.pri{background:var(--ink);color:#fff}
+.btn-lg.green{background:var(--green);border-color:var(--green);color:#fff}
+.copy-toast{
+  margin-top:10px;font-size:13.5px;font-weight:700;color:var(--green);min-height:20px;
+}
+
+/* Tab 2: Study Cards */
+.cards-header{
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+  margin-bottom:14px;
+}
+.cards-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+}
+.study-card{
+  border:1.5px solid var(--line);border-radius:16px;padding:14px;background:#fff;
+  display:flex;flex-direction:column;justify-content:space-between;
+  transition:border-color .15s,transform .15s;cursor:pointer;
+}
+.study-card:hover{border-color:var(--purple)}
+.study-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.study-badge{
+  font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;
+  background:var(--blue-bg);color:var(--blue);
+}
+.study-badge.warn{background:var(--orange-bg);color:var(--orange)}
+.study-nums{
+  font-size:26px;font-weight:900;letter-spacing:.02em;margin:4px 0;
+}
+.study-nums .mask{
+  display:inline-block;background:var(--ink);color:transparent;border-radius:6px;
+  padding:0 6px;user-select:none;transition:all .15s;
+}
+.study-card.revealed .study-nums .mask{
+  background:var(--yellow);color:var(--ink);
+}
+.study-canvas-wrap{
+  background:#f8fafc;border-radius:12px;padding:8px;margin:8px 0;text-align:center;
+}
+.study-canvas-wrap canvas{width:100%;max-width:220px;height:130px;display:block;margin:0 auto}
+.study-note{font-size:13.5px;color:var(--sub);margin:4px 0 0}
+.study-note b{color:var(--ink)}
+
+/* Number map table in Study tab */
+.map-table{
+  width:100%;border-collapse:collapse;margin-top:14px;font-size:14px;
+}
+.map-table th,.map-table td{
+  border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;
+}
+.map-table th{color:var(--sub);font-size:12.5px;font-weight:700;background:#f8fafc}
+.map-table tr.highlight-row{background:var(--orange-bg);font-weight:700}
+.num-chip{
+  display:inline-block;min-width:32px;text-align:center;font-weight:800;
+  background:#f1f5f9;border-radius:6px;padding:2px 7px;margin-right:4px;
+}
+.num-chip.hot{background:var(--orange);color:#fff}
+
+/* Tab 3: Triangle Blank Quiz */
+.tri-quiz-stage{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;
+}
+.tri-canvas-box{
+  background:#f8fafc;border:1.5px solid var(--line);border-radius:16px;padding:12px;text-align:center;
+}
+.tri-canvas-box canvas{width:100%;max-width:300px;aspect-ratio:4/3;display:block;margin:0 auto}
+.tri-opts{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0;
+}
+.tri-opt{
+  border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:13px 8px;
+  font:inherit;font-size:20px;font-weight:800;cursor:pointer;
+}
+.tri-opt.ok{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.tri-opt.no{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+
+@media (max-width:640px){
+  .cheat-grid,.cards-grid,.tri-quiz-stage{grid-template-columns:1fr}
+  .wrap{padding:14px 10px 48px}
+  section.panel{padding:14px 12px}
+  .key{padding:11px 4px;font-size:19px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📐 피타고라스 수 4쌍 완벽 암기 퀴즈</h1>
+    <p>숫자 하나만 봐도 피타고라스 수 세 쌍이 0.1초 만에 튀어나오게 연습해 보세요!</p>
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab" role="tab" id="tabBtn0" aria-selected="true">
+        🎯 숫자 보고 쌍 적기
+        <span class="sub">핵심 암기 퀴즈</span>
+      </button>
+      <button class="nav-tab" role="tab" id="tabBtn1" aria-selected="false">
+        📖 4쌍 암기 카드
+        <span class="sub">먼저 외우기 & 정리표</span>
+      </button>
+      <button class="nav-tab" role="tab" id="tabBtn2" aria-selected="false">
+        🔺 직각삼각형 빈칸
+        <span class="sub">도형에 바로 적용</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== TAB 0: CORE QUIZ ==================== -->
+  <section class="panel" id="panel0">
+    <div class="study-toggle-bar">
+      <span>💡 시작 전 4가지 쌍을 먼저 확인하고 싶다면?</span>
+      <button class="btn-sm" id="toggleCheatBtn">📖 4쌍 요약표 보기</button>
+    </div>
+
+    <div class="cheat-box" id="cheatBox" hidden>
+      <div style="font-size:13.5px;font-weight:700;color:var(--purple)">
+        외워야 할 피타고라스 수 4쌍 (퀴즈 입력을 시작하면 자동으로 닫혀요!)
+      </div>
+      <div class="cheat-grid">
+        <div class="cheat-item">
+          <span class="nums">3, 4, <em>5</em></span>
+          <span class="sq">3² + 4² = 5² (9+16=25)</span>
+        </div>
+        <div class="cheat-item">
+          <span class="nums"><em>5</em>, 12, 13</span>
+          <span class="sq">5² + 12² = 13² (25+144=169)</span>
+        </div>
+        <div class="cheat-item">
+          <span class="nums">7, 24, 25</span>
+          <span class="sq">7² + 24² = 25² (49+576=625)</span>
+        </div>
+        <div class="cheat-item">
+          <span class="nums">8, 15, 17</span>
+          <span class="sq">8² + 15² = 17² (64+225=289)</span>
+        </div>
+      </div>
+      <div class="cheat-tip">
+        ⭐ <b>핵심 포인트:</b> 숫자 <b>3</b>을 보면 <b>3,4,5</b> 한 쌍만 적지만, 숫자 <b>5</b>는 두 군데에 모두 들어가므로 <b>3,4,5 / 5,12,13</b> 두 쌍을 모두 적어야 정답입니다! (※ 8, 16, 17이 아니라 <b>8, 15, 17</b>이에요!)
+      </div>
+    </div>
+
+    <div id="quizPlayArea">
+      <div class="status-bar">
+        <span id="qProgressText">문제 1 / 12</span>
+        <div class="badges">
+          <span class="badge streak" id="qStreakBadge">🔥 연속 0</span>
+          <span class="badge score" id="qScoreBadge">정답 0 / 0</span>
+        </div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="qProgressBar"></div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">이 숫자가 들어가는 피타고라스 수를 모두 적으세요</div>
+        <div class="prompt-number" id="targetNumBox">3</div>
+        <p class="prompt-guide">숫자 <b id="targetNumInline" style="color:var(--purple)">3</b>이 포함된 쌍을 모두 입력!</p>
+        <p class="prompt-subguide">
+          한 쌍이면 <code>3,4,5</code> &nbsp;|&nbsp; 두 쌍이면 <code>/</code>로 구분해 <code>3,4,5/5,12,13</code>
+        </p>
+      </div>
+
+      <!-- Live Parsed Pills -->
+      <div class="preview-row" id="livePreview"></div>
+
+      <!-- Text Input -->
+      <div class="input-row">
+        <input
+          type="text"
+          id="ansInput"
+          class="ans-input"
+          placeholder="예: 3,4,5 또는 3,4,5/5,12,13"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        >
+        <button type="button" class="btn-sm" id="clearInputBtn" title="입력 내용 모두 지우기" style="padding:0 14px;border-radius:14px;font-size:14px">초기화</button>
+      </div>
+
+      <!-- Feedback Box (appears above keypad on submit so student sees it right away) -->
+      <div class="feedback-box" id="feedbackBox">
+        <div class="fb-title" id="fbTitle"></div>
+        <div class="fb-desc" id="fbDesc"></div>
+        <div class="fb-triangles" id="fbTriangles"></div>
+      </div>
+
+      <!-- Built-in Mobile/Desktop Keypad -->
+      <div class="keypad" id="keypad">
+        <button type="button" class="key" data-k="1">1</button>
+        <button type="button" class="key" data-k="2">2</button>
+        <button type="button" class="key" data-k="3">3</button>
+        <button type="button" class="key" data-k="4">4</button>
+        <button type="button" class="key" data-k="5">5</button>
+        <button type="button" class="key" data-k="6">6</button>
+        <button type="button" class="key" data-k="7">7</button>
+        <button type="button" class="key" data-k="8">8</button>
+        <button type="button" class="key" data-k="9">9</button>
+        <button type="button" class="key sym" data-k=",">, <small>숫자 구분</small></button>
+        <button type="button" class="key" data-k="0">0</button>
+        <button type="button" class="key sym" data-k="/">/ <small>다음 쌍 추가</small></button>
+        <button type="button" class="key act" data-act="back">⌫ 지우기</button>
+        <button type="button" class="key submit" id="submitBtn" data-act="submit">정답 확인 ↵</button>
+      </div>
+    </div>
+
+    <!-- Round Result Summary -->
+    <div class="result-box" id="quizResultArea" hidden>
+      <div class="result-grade" id="resEmoji">🏆</div>
+      <h2 class="result-title" id="resTitle">퀴즈 완료!</h2>
+      <p class="result-sub" id="resSub"></p>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="v" id="resScore">12 / 12</div>
+          <div class="k">한 번에 맞힌 문제</div>
+        </div>
+        <div class="stat-card">
+          <div class="v" id="resTime">0초</div>
+          <div class="k">걸린 시간</div>
+        </div>
+        <div class="stat-card">
+          <div class="v" id="resFiveTrap">성공</div>
+          <div class="k">'5' 두 쌍 모두 적기</div>
+        </div>
+      </div>
+
+      <div class="weak-box" id="resWeakBox" hidden></div>
+
+      <div class="result-actions">
+        <button type="button" class="btn-lg green" id="copyResultBtn">📋 결과 복사해서 선생님께 보내기</button>
+        <button type="button" class="btn-lg pri" id="restartQuizBtn">↻ 새로운 라운드 다시 풀기</button>
+      </div>
+      <div class="copy-toast" id="copyToast"></div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 1: STUDY CARDS ==================== -->
+  <section class="panel" id="panel1" hidden>
+    <div class="cards-header">
+      <div>
+        <h2 style="margin:0;font-size:19px">📖 중2 필수 피타고라스 수 4쌍</h2>
+        <p style="margin:2px 0 0;font-size:13.5px;color:var(--sub)">카드를 누르면 가려진 숫자를 확인하며 암기할 수 있어요.</p>
+      </div>
+      <button type="button" class="btn-sm" id="blindToggleBtn">🙈 숫자 가리고 외우기</button>
+    </div>
+
+    <div class="cards-grid" id="studyCardsGrid"></div>
+
+    <div style="margin-top:20px">
+      <h3 style="font-size:16.5px;margin:0 0 6px">🔍 숫자별 정답 한눈에 보기 (퀴즈 족보)</h3>
+      <p style="margin:0 0 8px;font-size:13.5px;color:var(--sub)">
+        11개의 숫자 중 오직 <b style="color:var(--orange)">5</b>만 두 쌍에 겹쳐서 등장합니다!
+      </p>
+      <table class="map-table">
+        <thead>
+          <tr>
+            <th>제시된 숫자</th>
+            <th>입력해야 할 정답</th>
+            <th>기억할 포인트</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="num-chip">3</span> <span class="num-chip">4</span></td>
+            <td><b>3, 4, 5</b></td>
+            <td>연속하는 세 자연수 (3² + 4² = 5²)</td>
+          </tr>
+          <tr class="highlight-row">
+            <td><span class="num-chip hot">5</span></td>
+            <td><b style="color:var(--orange)">3, 4, 5 / 5, 12, 13</b> (두 쌍!)</td>
+            <td>⭐ 3,4,5의 <b>빗변(5)</b>이자 5,12,13의 <b>짧은 변(5)</b>!</td>
+          </tr>
+          <tr>
+            <td><span class="num-chip">12</span> <span class="num-chip">13</span></td>
+            <td><b>5, 12, 13</b></td>
+            <td>12와 13은 1 차이 (5² + 12² = 13²)</td>
+          </tr>
+          <tr>
+            <td><span class="num-chip">7</span> <span class="num-chip">24</span> <span class="num-chip">25</span></td>
+            <td><b>7, 24, 25</b></td>
+            <td>24와 25도 1 차이 (7² + 24² = 25²)</td>
+          </tr>
+          <tr>
+            <td><span class="num-chip">8</span> <span class="num-chip">15</span> <span class="num-chip">17</span></td>
+            <td><b>8, 15, 17</b></td>
+            <td>15와 17은 2 차이 (※ 8, 16, 17 아님 주의!)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="text-align:center;margin-top:18px">
+      <button type="button" class="btn-lg pri" id="goQuizFromStudyBtn">🎯 다 외웠어요! 퀴즈 풀러 가기 ▶</button>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 2: TRIANGLE BLANK QUIZ ==================== -->
+  <section class="panel" id="panel2" hidden>
+    <div class="status-bar">
+      <span>🔺 <b>직각삼각형 빈칸 퀴즈</b> — 빗변(가장 긴 변)의 위치에 주의하세요!</span>
+      <span class="badge score" id="triScoreBadge">0 / 0 정답</span>
+    </div>
+    <div class="tri-quiz-stage">
+      <div class="tri-canvas-box">
+        <canvas id="triQuizCanvas"></canvas>
+      </div>
+      <div>
+        <div style="font-size:17px;font-weight:800;margin-bottom:4px" id="triPromptText">
+          직각삼각형에서 <span style="color:var(--purple)">x</span>의 값은?
+        </div>
+        <div style="font-size:13.5px;color:var(--sub);margin-bottom:10px" id="triSubText">
+          피타고라스 수 4쌍을 이용해 계산 없이 바로 찾아보세요.
+        </div>
+        <div class="tri-opts" id="triOpts"></div>
+        <div class="feedback-box" id="triFeedback" style="margin-top:10px"></div>
+        <div style="margin-top:12px">
+          <button type="button" class="btn-sm active" id="triNextBtn" style="padding:9px 16px;font-size:14px">다음 도형 문제 ▶</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =====================================================================
+   1. DATA: 4 CORE PYTHAGOREAN TRIPLES
+   ===================================================================== */
+var TRIPLES = [
+  { nums: [3, 4, 5],   key: "3,4,5",   label: "3, 4, 5",   eq: "3² + 4² = 9 + 16 = 25 = 5²",     tip: "연속하는 세 자연수! 가장 기본이 되는 쌍이에요.", badge: "기본 1순위" },
+  { nums: [5, 12, 13], key: "5,12,13", label: "5, 12, 13", eq: "5² + 12² = 25 + 144 = 169 = 13²", tip: "5로 시작해서 12, 13(1 차이)! 3,4,5의 5와 겹쳐요.", badge: "★ 5 중복 주의", warn: true },
+  { nums: [7, 24, 25], key: "7,24,25", label: "7, 24, 25", eq: "7² + 24² = 49 + 576 = 625 = 25²", tip: "홀수 7로 시작해서 24, 25(1 차이)로 끝나요.", badge: "큰 수 단골" },
+  { nums: [8, 15, 17], key: "8,15,17", label: "8, 15, 17", eq: "8² + 15² = 64 + 225 = 289 = 17²", tip: "짝수 8로 시작! 16이 아니라 15, 17(2 차이)입니다.", badge: "15 vs 16 주의", warn: true }
+];
+
+// All distinct numbers in the 4 triples: [3, 4, 5, 7, 8, 12, 13, 15, 17, 24, 25]
+var ALL_NUMS = [3, 4, 5, 7, 8, 12, 13, 15, 17, 24, 25];
+
+function getExpectedTriples(targetNum) {
+  return TRIPLES.filter(function(t) {
+    return t.nums.indexOf(targetNum) !== -1;
+  });
+}
+
+var $ = function(id) { return document.getElementById(id); };
+
+/* =====================================================================
+   2. CANVAS RIGHT-TRIANGLE RENDERER
+   ===================================================================== */
+function drawRightTriangle(canvas, a, b, c, highlightNum, opts) {
+  opts = opts || {};
+  var dpr = window.devicePixelRatio || 1;
+  var w = canvas.clientWidth || 160;
+  var h = canvas.clientHeight || 110;
+  if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+  }
+  var ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  // Visual proportions clamped so very skinny triangles like 7-24-25 still look crisp & readable
+  var ratio = a / b;
+  var vRatio = Math.max(0.42, Math.min(0.85, Math.pow(ratio, 0.55)));
+  var padX = opts.mini ? 22 : 38;
+  var padY = opts.mini ? 16 : 26;
+  var availW = w - padX * 2;
+  var availH = h - padY * 2;
+
+  var triW = availW;
+  var triH = triW * vRatio;
+  if (triH > availH) {
+    triH = availH;
+    triW = triH / vRatio;
+  }
+
+  // Right angle at bottom-left (x0, y0)
+  var x0 = (w - triW) / 2 + 4;
+  var y0 = (h + triH) / 2 - 2;
+  var x1 = x0 + triW;
+  var y1 = y0;
+  var x2 = x0;
+  var y2 = y0 - triH;
+
+  // Fill triangle
+  ctx.fillStyle = "rgba(124, 58, 237, 0.07)";
+  ctx.beginPath();
+  ctx.moveTo(x0, y0);
+  ctx.lineTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.closePath();
+  ctx.fill();
+
+  // Right angle square marker
+  var sq = opts.mini ? 7 : 11;
+  ctx.strokeStyle = "#64748b";
+  ctx.lineWidth = 1.3;
+  ctx.beginPath();
+  ctx.moveTo(x0 + sq, y0);
+  ctx.lineTo(x0 + sq, y0 - sq);
+  ctx.lineTo(x0, y0 - sq);
+  ctx.stroke();
+
+  // Triangle outline
+  ctx.strokeStyle = "#1c2540";
+  ctx.lineWidth = opts.mini ? 2 : 2.5;
+  ctx.lineJoin = "round";
+  ctx.beginPath();
+  ctx.moveTo(x0, y0);
+  ctx.lineTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.closePath();
+  ctx.stroke();
+
+  // Labels: vertical leg = a, horizontal leg = b, hypotenuse = c
+  var fontSize = opts.mini ? 12.5 : 15.5;
+  ctx.textBaseline = "middle";
+
+  function drawLabel(val, lx, ly, align) {
+    var isHi = (highlightNum !== undefined && String(val) === String(highlightNum)) || val === "x";
+    ctx.font = (isHi ? "900 " : "700 ") + fontSize + 'px "Pretendard", system-ui, sans-serif';
+    ctx.textAlign = align || "center";
+    var text = String(val);
+    if (isHi) {
+      var tw = ctx.measureText(text).width;
+      var bx = align === "right" ? lx - tw - 5 : (align === "left" ? lx - 5 : lx - tw / 2 - 5);
+      ctx.fillStyle = val === "x" ? "#faf5ff" : "#fff7ed";
+      ctx.strokeStyle = val === "x" ? "#7c3aed" : "#ea580c";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(bx, ly - fontSize * 0.65, tw + 10, fontSize * 1.3, 6)
+                    : ctx.rect(bx, ly - fontSize * 0.65, tw + 10, fontSize * 1.3);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = val === "x" ? "#7c3aed" : "#ea580c";
+    } else {
+      ctx.fillStyle = "#1c2540";
+    }
+    ctx.fillText(text, lx, ly);
+  }
+
+  // Left vertical side (a)
+  drawLabel(a, x0 - (opts.mini ? 7 : 10), (y0 + y2) / 2, "right");
+  // Bottom horizontal side (b)
+  drawLabel(b, (x0 + x1) / 2, y0 + (opts.mini ? 11 : 15), "center");
+  // Hypotenuse (c)
+  drawLabel(c, (x1 + x2) / 2 + (opts.mini ? 9 : 12), (y1 + y2) / 2 - (opts.mini ? 7 : 9), "left");
+}
+
+/* =====================================================================
+   3. FLEXIBLE ANSWER PARSER
+      Supports:
+      - "3,4,5"
+      - "3,4,5/5,12,13" or "3, 4, 5 / 5, 12, 13"
+      - "3 4 5 / 5 12 13"
+      - "3,4,5,5,12,13" (6 numbers auto-split into 2 triples)
+   ===================================================================== */
+function parseUserTriples(raw) {
+  var cleaned = String(raw || "").trim();
+  if (!cleaned) return { groups: [], validFormat: false };
+
+  // Split by explicit pair delimiters first: '/', ';', '|', or newline
+  var segments = cleaned.split(/[\/;|\n]+/).map(function(s) { return s.trim(); }).filter(Boolean);
+  var groups = [];
+
+  segments.forEach(function(seg) {
+    var nums = seg.match(/\d+/g);
+    if (!nums) return;
+    var parsed = nums.map(Number);
+    // If student typed 6 numbers without '/', e.g. "3,4,5,5,12,13", split into chunks of 3
+    if (parsed.length === 6 && segments.length === 1) {
+      groups.push(parsed.slice(0, 3));
+      groups.push(parsed.slice(3, 6));
+    } else {
+      groups.push(parsed);
+    }
+  });
+
+  // Check if user has a trailing slash indicating they are typing another pair
+  var hasTrailingSlash = /[\/;|]\s*$/.test(cleaned);
+
+  var allComplete = groups.length > 0 && !hasTrailingSlash && groups.every(function(g) {
+    return g.length === 3;
+  });
+
+  return {
+    groups: groups,
+    hasTrailingSlash: hasTrailingSlash,
+    validFormat: allComplete
+  };
+}
+
+function normalizeTripleKey(arr3) {
+  var copy = arr3.slice().sort(function(a, b) { return a - b; });
+  return copy.join(",");
+}
+
+/* =====================================================================
+   4. CORE QUIZ LOGIC (TAB 0)
+   ===================================================================== */
+var quizState = {
+  deck: [],
+  idx: 0,
+  answered: false,
+  streak: 0,
+  firstTryRight: 0,
+  totalQuestions: 12,
+  startTime: 0,
+  missedNums: {},
+  fiveSuccess: true,
+  currentTarget: 3,
+  isRetryItem: false
+};
+
+function buildDeck() {
+  // 11 distinct numbers + extra '5' so '5' appears twice in a 12-question round!
+  var pool = [3, 4, 5, 5, 7, 8, 12, 13, 15, 17, 24, 25];
+  // Fisher-Yates shuffle, avoiding two '5's back-to-back
+  for (var attempt = 0; attempt < 10; attempt++) {
+    for (var i = pool.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+    }
+    var adjacentFive = false;
+    for (var k = 0; k < pool.length - 1; k++) {
+      if (pool[k] === 5 && pool[k + 1] === 5) adjacentFive = true;
+    }
+    if (!adjacentFive) break;
+  }
+  return pool.map(function(num) { return { num: num, retry: false }; });
+}
+
+function startQuizRound() {
+  quizState.deck = buildDeck();
+  quizState.idx = 0;
+  quizState.answered = false;
+  quizState.streak = 0;
+  quizState.firstTryRight = 0;
+  quizState.totalQuestions = quizState.deck.length;
+  quizState.startTime = Date.now();
+  quizState.missedNums = {};
+  quizState.fiveSuccess = true;
+
+  $("quizResultArea").hidden = true;
+  $("quizPlayArea").hidden = false;
+  loadQuizQuestion();
+}
+
+function loadQuizQuestion() {
+  var item = quizState.deck[quizState.idx];
+  quizState.currentTarget = item.num;
+  quizState.isRetryItem = item.retry;
+  quizState.answered = false;
+
+  var numBox = $("targetNumBox");
+  numBox.textContent = item.num;
+  numBox.classList.remove("pop");
+  void numBox.offsetWidth;
+  numBox.classList.add("pop");
+
+  $("targetNumInline").textContent = item.num;
+
+  var total = quizState.deck.length;
+  var cur = quizState.idx + 1;
+  $("qProgressText").textContent = (item.retry ? "🔄 복습 문제 " : "문제 ") + cur + " / " + total;
+  $("qProgressBar").style.width = Math.round(((cur - 1) / total) * 100) + "%";
+  $("qStreakBadge").textContent = "🔥 연속 " + quizState.streak;
+  $("qScoreBadge").textContent = "정답 " + quizState.firstTryRight + " / " + quizState.totalQuestions;
+
+  var inp = $("ansInput");
+  inp.value = "";
+  inp.className = "ans-input";
+  inp.readOnly = false;
+
+  var fb = $("feedbackBox");
+  fb.className = "feedback-box";
+  $("fbTriangles").innerHTML = "";
+
+  var submitBtn = $("submitBtn");
+  submitBtn.textContent = "정답 확인 ↵";
+  submitBtn.classList.remove("next-mode");
+
+  updateLivePreview();
+}
+
+function updateLivePreview() {
+  var raw = $("ansInput").value;
+  var box = $("livePreview");
+  box.innerHTML = "";
+  var parsed = parseUserTriples(raw);
+
+  if (parsed.groups.length === 0 && !parsed.hasTrailingSlash) {
+    var ph = document.createElement("span");
+    ph.className = "preview-placeholder";
+    ph.textContent = "아래 숫자패드나 키보드로 입력해 보세요 (예: 3,4,5)";
+    box.appendChild(ph);
+    return;
+  }
+
+  parsed.groups.forEach(function(g, idx) {
+    var pill = document.createElement("span");
+    var complete = g.length === 3;
+    pill.className = "pair-pill" + (complete ? "" : " incomplete");
+    var tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = (idx + 1) + "번째 쌍";
+    pill.appendChild(tag);
+    pill.appendChild(document.createTextNode("(" + g.join(", ") + (complete ? ")" : " …)")));
+    box.appendChild(pill);
+  });
+
+  if (parsed.hasTrailingSlash) {
+    var nextPill = document.createElement("span");
+    nextPill.className = "pair-pill incomplete";
+    var tag2 = document.createElement("span");
+    tag2.className = "tag";
+    tag2.textContent = (parsed.groups.length + 1) + "번째 쌍";
+    nextPill.appendChild(tag2);
+    nextPill.appendChild(document.createTextNode("입력 대기 중…"));
+    box.appendChild(nextPill);
+  }
+}
+
+function hideCheatSheetOnPlay() {
+  var cb = $("cheatBox");
+  if (!cb.hidden) {
+    cb.hidden = true;
+    $("toggleCheatBtn").classList.remove("active");
+    $("toggleCheatBtn").textContent = "📖 4쌍 요약표 보기";
+  }
+}
+
+function diagnoseMistake(target, userKeys, expectedTriples) {
+  // 1. Check if user typed "8,16,17" (the classic confusion with 8,15,17!)
+  if (userKeys.indexOf("8,16,17") !== -1) {
+    return "💡 아차! <b>8, 16, 17</b>이 아니라 <b>8, 15, 17</b>이에요! (8² + 15² = 64 + 225 = 289 = 17²)";
+  }
+  // 2. Target is 5, and user only wrote one of (3,4,5) or (5,12,13)
+  if (target === 5 && userKeys.length === 1 && (userKeys[0] === "3,4,5" || userKeys[0] === "5,12,13")) {
+    var wrote = userKeys[0] === "3,4,5" ? "(3, 4, 5)" : "(5, 12, 13)";
+    var missed = userKeys[0] === "3,4,5" ? "(5, 12, 13)" : "(3, 4, 5)";
+    return "⚡ <b>반쪽 정답(함정)!</b> " + wrote + "만 적었네요. 숫자 <b>5</b>는 <b>3, 4, 5</b>와 <b>5, 12, 13</b> 두 쌍에 모두 들어가므로 <b>3,4,5 / 5,12,13</b> 두 개를 다 적어야 해요! (놓친 쌍: <b>" + missed + "</b>)";
+  }
+  // 3. Digit confusion: e.g. target is 3 and user included 5,12,13 (thinking of '13'), or target is 5 and user included 7,24,25 ('25') or 8,15,17 ('15')
+  if (target === 3 && userKeys.indexOf("5,12,13") !== -1) {
+    return "💡 <b>13</b>의 일의 자리 3과 헷갈렸나요? 변의 길이가 정확히 <b>3</b>인 쌍은 <b>3, 4, 5</b> 하나뿐이에요!";
+  }
+  if (target === 4 && userKeys.indexOf("7,24,25") !== -1) {
+    return "💡 <b>24</b>에 4가 들어있지만, 변의 길이가 정확히 <b>4</b>인 쌍은 <b>3, 4, 5</b> 하나뿐이에요!";
+  }
+  if (target === 5 && (userKeys.indexOf("7,24,25") !== -1 || userKeys.indexOf("8,15,17") !== -1)) {
+    return "💡 <b>15</b>나 <b>25</b>가 아니라, 변의 길이가 정확히 <b>5</b>인 두 쌍 <b>3, 4, 5 / 5, 12, 13</b>을 적어야 해요!";
+  }
+  if (target === 7 && userKeys.indexOf("8,15,17") !== -1) {
+    return "💡 <b>17</b>이 아니라 변의 길이가 정확히 <b>7</b>인 쌍은 <b>7, 24, 25</b>예요!";
+  }
+
+  var ansStr = expectedTriples.map(function(t) { return t.key; }).join(" / ");
+  return "숫자 <b>" + target + "</b>이(가) 들어가는 피타고라스 수는 <b>" + ansStr + "</b> 입니다.";
+}
+
+function checkQuizAnswer() {
+  if (quizState.answered) {
+    nextQuizQuestion();
+    return;
+  }
+
+  hideCheatSheetOnPlay();
+  var raw = $("ansInput").value;
+  var parsed = parseUserTriples(raw);
+
+  var fb = $("feedbackBox");
+  var fbTitle = $("fbTitle");
+  var fbDesc = $("fbDesc");
+  var fbTri = $("fbTriangles");
+
+  if (parsed.groups.length === 0) {
+    fb.className = "feedback-box show no";
+    fbTitle.innerHTML = "⚠️ 답을 입력해 주세요!";
+    fbDesc.innerHTML = "예시처럼 세 숫자를 쉼표(,)로 구분해 적어보세요. (예: <b>3,4,5</b>)";
+    return;
+  }
+
+  if (parsed.hasTrailingSlash) {
+    fb.className = "feedback-box show no";
+    fbTitle.innerHTML = "⚠️ '/' 뒤에 두 번째 쌍을 마저 입력해 주세요!";
+    fbDesc.innerHTML = "한 쌍만 적으려면 마지막 <b>/</b>를 지우고, 두 쌍을 적으려면 <b>/</b> 뒤에 세 숫자를 더 적어주세요.";
+    return;
+  }
+
+  // Check if any group doesn't have 3 numbers
+  var hasIncomplete = parsed.groups.some(function(g) { return g.length !== 3; });
+  if (hasIncomplete) {
+    fb.className = "feedback-box show no";
+    fbTitle.innerHTML = "⚠️ 한 쌍은 숫자 3개(a, b, c)로 이루어져야 해요!";
+    fbDesc.innerHTML = "쉼표(,)로 세 숫자를 모두 적었는지 확인해 보세요. (예: <b>3,4,5</b> 또는 <b>3,4,5/5,12,13</b>)";
+    return;
+  }
+
+  var target = quizState.currentTarget;
+  var expected = getExpectedTriples(target);
+  var expectedKeys = expected.map(function(t) { return t.key; }).sort();
+
+  // Deduplicate normalized user keys
+  var userKeyMap = {};
+  parsed.groups.forEach(function(g) {
+    userKeyMap[normalizeTripleKey(g)] = true;
+  });
+  var userKeys = Object.keys(userKeyMap).sort();
+
+  var isCorrect = (
+    userKeys.length === expectedKeys.length &&
+    userKeys.every(function(k, i) { return k === expectedKeys[i]; })
+  );
+
+  quizState.answered = true;
+  var inp = $("ansInput");
+  inp.readOnly = true;
+
+  var submitBtn = $("submitBtn");
+  submitBtn.textContent = (quizState.idx < quizState.deck.length - 1) ? "다음 문제 ▶ (Enter)" : "결과 보기 🏆 (Enter)";
+  submitBtn.classList.add("next-mode");
+
+  if (isCorrect) {
+    inp.className = "ans-input ok";
+    quizState.streak++;
+    if (!quizState.isRetryItem) {
+      quizState.firstTryRight++;
+    }
+    fb.className = "feedback-box show ok";
+    if (target === 5) {
+      fbTitle.innerHTML = "🎯 완벽해요! 함정 숫자 5 통과!";
+      fbDesc.innerHTML = "<b>5</b>가 들어가는 두 쌍 <b>(3, 4, 5)</b>와 <b>(5, 12, 13)</b>을 빠짐없이 모두 찾아냈어요!";
+    } else {
+      fbTitle.innerHTML = "✅ 정답입니다!";
+      fbDesc.innerHTML = "숫자 <b>" + target + "</b>을(를) 보자마자 <b>(" + expected[0].label + ")</b>을 정확히 떠올렸어요!";
+    }
+  } else {
+    inp.className = "ans-input no";
+    quizState.streak = 0;
+    quizState.missedNums[target] = true;
+    if (target === 5) quizState.fiveSuccess = false;
+
+    fb.className = "feedback-box show no";
+    fbTitle.innerHTML = "❌ 아까워요! 정답을 확인해 볼까요?";
+    fbDesc.innerHTML = diagnoseMistake(target, userKeys, expected) +
+      "<br><span style='font-size:13px;opacity:.85'>※ 완벽히 외울 수 있도록 이 숫자는 마지막에 한 번 더 출제됩니다!</span>";
+
+    // Re-queue this number at the end of the deck so the student gets to master it!
+    quizState.deck.push({ num: target, retry: true });
+  }
+
+  $("qStreakBadge").textContent = "🔥 연속 " + quizState.streak;
+  $("qScoreBadge").textContent = "정답 " + quizState.firstTryRight + " / " + quizState.totalQuestions;
+
+  // Render visual right triangles for expected triples
+  fbTri.innerHTML = "";
+  expected.forEach(function(t) {
+    var card = document.createElement("div");
+    card.className = "mini-tri-card";
+    var cv = document.createElement("canvas");
+    var info = document.createElement("div");
+    info.className = "mini-tri-info";
+    info.innerHTML = '<div class="t-pair">(' + t.label + ')</div><div class="t-eq">' + t.eq + '</div>';
+    card.appendChild(cv);
+    card.appendChild(info);
+    fbTri.appendChild(card);
+    drawRightTriangle(cv, t.nums[0], t.nums[1], t.nums[2], target, { mini: true });
+  });
+}
+
+function nextQuizQuestion() {
+  if (quizState.idx < quizState.deck.length - 1) {
+    quizState.idx++;
+    loadQuizQuestion();
+  } else {
+    showQuizResult();
+  }
+}
+
+function showQuizResult() {
+  $("quizPlayArea").hidden = true;
+  $("quizResultArea").hidden = false;
+  $("qProgressBar").style.width = "100%";
+
+  var sec = Math.max(1, Math.round((Date.now() - quizState.startTime) / 1000));
+  var right = quizState.firstTryRight;
+  var total = quizState.totalQuestions;
+  var pct = Math.round((right / total) * 100);
+
+  $("resScore").textContent = right + " / " + total + " (" + pct + "%)";
+  $("resTime").textContent = sec + "초";
+  $("resFiveTrap").textContent = quizState.fiveSuccess ? "성공 💯" : "복습 완료";
+  $("resFiveTrap").style.color = quizState.fiveSuccess ? "var(--green)" : "var(--orange)";
+
+  var missedList = Object.keys(quizState.missedNums).map(Number);
+  var weakBox = $("resWeakBox");
+
+  if (right === total) {
+    $("resEmoji").textContent = "🏆";
+    $("resTitle").textContent = "완벽해요! 피타고라스 수 마스터!";
+    $("resSub").textContent = "4가지 피타고라스 수 쌍과 숫자 5 함정까지 한 번에 모두 맞혔어요!";
+    weakBox.hidden = true;
+  } else if (pct >= 75) {
+    $("resEmoji").textContent = "🎉";
+    $("resTitle").textContent = "아주 잘했어요! 조금만 더 하면 100점!";
+    $("resSub").textContent = "헷갈렸던 숫자만 다시 한 번 눈에 익히고 만점에 도전해 보세요.";
+    weakBox.hidden = false;
+  } else {
+    $("resEmoji").textContent = "💪";
+    $("resTitle").textContent = "끝까지 복습 완료! 한 번 더 해볼까요?";
+    $("resSub").textContent = "반복할수록 숫자를 보자마자 손이 먼저 움직이게 됩니다!";
+    weakBox.hidden = false;
+  }
+
+  if (missedList.length > 0) {
+    var details = missedList.map(function(n) {
+      var exp = getExpectedTriples(n).map(function(t) { return t.key; }).join(" / ");
+      return "<li>숫자 <b>" + n + "</b> → <b>" + exp + "</b></li>";
+    }).join("");
+    weakBox.innerHTML = "<b>📌 내가 헷갈렸던 숫자 오답노트</b><ul style='margin:6px 0 0;padding-left:20px'>" + details + "</ul>";
+  }
+
+  $("copyToast").textContent = "";
+}
+
+/* Keypad & Input handlers */
+function insertChar(ch) {
+  if (quizState.answered) return;
+  hideCheatSheetOnPlay();
+  var inp = $("ansInput");
+  inp.value += ch;
+  updateLivePreview();
+}
+
+function backspaceChar() {
+  if (quizState.answered) return;
+  var inp = $("ansInput");
+  inp.value = inp.value.slice(0, -1);
+  updateLivePreview();
+}
+
+$("keypad").addEventListener("click", function(e) {
+  var btn = e.target.closest("button");
+  if (!btn) return;
+  var k = btn.getAttribute("data-k");
+  var act = btn.getAttribute("data-act");
+  if (k !== null) {
+    insertChar(k);
+  } else if (act === "back") {
+    backspaceChar();
+  } else if (act === "submit") {
+    checkQuizAnswer();
+  }
+});
+
+$("ansInput").addEventListener("input", function() {
+  hideCheatSheetOnPlay();
+  updateLivePreview();
+});
+
+$("clearInputBtn").addEventListener("click", function() {
+  if (quizState.answered) return;
+  $("ansInput").value = "";
+  updateLivePreview();
+});
+
+// Global keyboard support so desktop users don't even need to click the input box
+document.addEventListener("keydown", function(e) {
+  if ($("panel0").hidden || !$("quizResultArea").hidden) return;
+  var active = document.activeElement;
+  var inInput = (active === $("ansInput"));
+
+  if (e.key === "Enter") {
+    e.preventDefault();
+    checkQuizAnswer();
+    return;
+  }
+  if (quizState.answered) return;
+
+  if (!inInput) {
+    if (/^[0-9,\/]$/.test(e.key)) {
+      e.preventDefault();
+      insertChar(e.key);
+    } else if (e.key === " ") {
+      e.preventDefault();
+      insertChar(",");
+    } else if (e.key === "Backspace") {
+      e.preventDefault();
+      backspaceChar();
+    }
+  }
+});
+
+$("toggleCheatBtn").addEventListener("click", function() {
+  var cb = $("cheatBox");
+  cb.hidden = !cb.hidden;
+  this.classList.toggle("active", !cb.hidden);
+  this.textContent = cb.hidden ? "📖 4쌍 요약표 보기" : "🙈 요약표 닫기";
+});
+
+$("restartQuizBtn").addEventListener("click", startQuizRound);
+
+$("copyResultBtn").addEventListener("click", function() {
+  var sec = Math.max(1, Math.round((Date.now() - quizState.startTime) / 1000));
+  var right = quizState.firstTryRight;
+  var total = quizState.totalQuestions;
+  var pct = Math.round((right / total) * 100);
+  var missedList = Object.keys(quizState.missedNums);
+  var text = "[피타고라스 수 4쌍 암기 퀴즈 결과]\n" +
+    "• 한 번에 맞힌 점수: " + right + "/" + total + " (" + pct + "%)\n" +
+    "• 걸린 시간: " + sec + "초\n" +
+    "• '5' 두 쌍(3,4,5/5,12,13) 찾기: " + (quizState.fiveSuccess ? "성공 💯" : "복습 완료") + "\n" +
+    "• 헷갈린 숫자: " + (missedList.length ? missedList.join(", ") : "없음 (완벽!)");
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      $("copyToast").textContent = "✅ 결과가 복사되었어요! 카카오톡이나 메시지에 붙여넣기 해보세요.";
+    });
+  } else {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    $("copyToast").textContent = "✅ 결과가 복사되었어요! 카카오톡이나 메시지에 붙여넣기 해보세요.";
+  }
+});
+
+/* =====================================================================
+   5. TAB 1: STUDY CARDS & BLIND MEMORIZATION
+   ===================================================================== */
+var blindMode = false;
+var studyCanvases = [];
+
+function buildStudyCards() {
+  var grid = $("studyCardsGrid");
+  grid.innerHTML = "";
+  studyCanvases = [];
+
+  TRIPLES.forEach(function(t, idx) {
+    var card = document.createElement("div");
+    card.className = "study-card";
+    var badgeClass = t.warn ? "study-badge warn" : "study-badge";
+
+    var numsHtml = t.nums.map(function(n, i) {
+      if (i === 0) return '<span>' + n + '</span>';
+      return '<span class="mask-target">' + n + '</span>';
+    }).join(", ");
+
+    card.innerHTML =
+      '<div>' +
+        '<div class="study-card-top">' +
+          '<span style="font-size:13px;font-weight:700;color:var(--sub)">#' + (idx + 1) + '번째 쌍</span>' +
+          '<span class="' + badgeClass + '">' + t.badge + '</span>' +
+        '</div>' +
+        '<div class="study-nums">' + numsHtml + '</div>' +
+        '<div style="font-size:13px;color:var(--purple);font-weight:700">' + t.eq + '</div>' +
+      '</div>' +
+      '<div class="study-canvas-wrap"><canvas></canvas></div>' +
+      '<p class="study-note">💡 ' + t.tip + '</p>';
+
+    card.addEventListener("click", function() {
+      if (!blindMode) return;
+      card.classList.toggle("revealed");
+      var cv = card.querySelector("canvas");
+      var isRev = card.classList.contains("revealed");
+      drawRightTriangle(cv, t.nums[0], isRev ? t.nums[1] : "?", isRev ? t.nums[2] : "?", t.nums[0] === 5 || t.nums[2] === 5 ? 5 : undefined);
+    });
+
+    grid.appendChild(card);
+    var cv = card.querySelector("canvas");
+    studyCanvases.push({ canvas: cv, triple: t, card: card });
+  });
+}
+
+function renderStudyCanvases() {
+  studyCanvases.forEach(function(item) {
+    var t = item.triple;
+    var show = !blindMode || item.card.classList.contains("revealed");
+    drawRightTriangle(
+      item.canvas,
+      t.nums[0],
+      show ? t.nums[1] : "?",
+      show ? t.nums[2] : "?",
+      (t.nums.indexOf(5) !== -1) ? 5 : undefined
+    );
+  });
+}
+
+$("blindToggleBtn").addEventListener("click", function() {
+  blindMode = !blindMode;
+  this.classList.toggle("active", blindMode);
+  this.textContent = blindMode ? "👀 숫자 모두 보이기" : "🙈 숫자 가리고 외우기";
+
+  var cards = $("studyCardsGrid").querySelectorAll(".study-card");
+  cards.forEach(function(c) {
+    c.classList.remove("revealed");
+    var targets = c.querySelectorAll(".mask-target");
+    targets.forEach(function(el) {
+      el.className = blindMode ? "mask-target mask" : "mask-target";
+    });
+  });
+  renderStudyCanvases();
+});
+
+/* =====================================================================
+   6. TAB 2: RIGHT TRIANGLE BLANK APPLICATION QUIZ
+   ===================================================================== */
+var triQuiz = {
+  triple: TRIPLES[0],
+  hideIdx: 2,
+  ans: 5,
+  done: false,
+  right: 0,
+  total: 0,
+  lastKey: ""
+};
+
+function newTriQuestion() {
+  var t, hideIdx, key;
+  do {
+    t = TRIPLES[Math.floor(Math.random() * TRIPLES.length)];
+    hideIdx = Math.floor(Math.random() * 3);
+    key = t.key + ":" + hideIdx;
+  } while (key === triQuiz.lastKey);
+
+  triQuiz.lastKey = key;
+  triQuiz.triple = t;
+  triQuiz.hideIdx = hideIdx;
+  triQuiz.ans = t.nums[hideIdx];
+  triQuiz.done = false;
+
+  var fb = $("triFeedback");
+  fb.className = "feedback-box";
+  fb.innerHTML = "";
+
+  var roleName = hideIdx === 2 ? "빗변(가장 긴 변)" : "직각을 낀 한 변";
+  $("triPromptText").innerHTML = '직각삼각형에서 ' + roleName + ' <span style="color:var(--purple)">x</span>의 길이는?';
+
+  // Generate 4 smart choices including common traps (like 16 vs 15, or 5's two pairs)
+  var pool = [triQuiz.ans];
+  var distractors = [3, 4, 5, 7, 8, 12, 13, 15, 16, 17, 24, 25];
+  // Prioritize close numbers
+  distractors.sort(function(a, b) {
+    return Math.abs(a - triQuiz.ans) - Math.abs(b - triQuiz.ans);
+  });
+  for (var i = 0; i < distractors.length && pool.length < 4; i++) {
+    if (pool.indexOf(distractors[i]) === -1) pool.push(distractors[i]);
+  }
+  pool.sort(function(a, b) { return a - b; });
+
+  var optsBox = $("triOpts");
+  optsBox.innerHTML = "";
+  pool.forEach(function(val) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tri-opt";
+    btn.textContent = val;
+    btn.addEventListener("click", function() {
+      if (triQuiz.done) return;
+      triQuiz.done = true;
+      triQuiz.total++;
+
+      var allBtns = optsBox.querySelectorAll(".tri-opt");
+      allBtns.forEach(function(b) {
+        if (Number(b.textContent) === triQuiz.ans) b.classList.add("ok");
+      });
+
+      if (val === triQuiz.ans) {
+        triQuiz.right++;
+        fb.className = "feedback-box show ok";
+        fb.innerHTML = "<b>✅ 정답!</b> 피타고라스 수 <b>(" + t.label + ")</b>에서 <b>x = " + triQuiz.ans + "</b>입니다. (" + t.eq + ")";
+      } else {
+        btn.classList.add("no");
+        fb.className = "feedback-box show no";
+        var extra = (val === 16 && triQuiz.ans === 15) ? " (8, 16, 17이 아니라 <b>8, 15, 17</b>이에요!)" : "";
+        fb.innerHTML = "<b>❌ 아쉬워요!</b> 정답은 <b>" + triQuiz.ans + "</b>입니다." + extra + "<br>피타고라스 수 <b>(" + t.label + ")</b>을 떠올려 보세요.";
+      }
+      $("triScoreBadge").textContent = triQuiz.right + " / " + triQuiz.total + " 정답";
+      renderTriQuizCanvas(true);
+    });
+    optsBox.appendChild(btn);
+  });
+
+  renderTriQuizCanvas(false);
+}
+
+function renderTriQuizCanvas(reveal) {
+  var t = triQuiz.triple;
+  var sides = t.nums.map(function(n, idx) {
+    if (idx === triQuiz.hideIdx) return reveal ? n : "x";
+    return n;
+  });
+  drawRightTriangle($("triQuizCanvas"), sides[0], sides[1], sides[2], reveal ? triQuiz.ans : "x");
+}
+
+$("triNextBtn").addEventListener("click", newTriQuestion);
+
+/* =====================================================================
+   7. TAB NAVIGATION & RESIZE
+   ===================================================================== */
+function switchTab(tabIdx) {
+  for (var i = 0; i < 3; i++) {
+    $("tabBtn" + i).setAttribute("aria-selected", i === tabIdx ? "true" : "false");
+    $("panel" + i).hidden = (i !== tabIdx);
+  }
+  if (tabIdx === 1) renderStudyCanvases();
+  if (tabIdx === 2) renderTriQuizCanvas(triQuiz.done);
+}
+
+$("tabBtn0").addEventListener("click", function() { switchTab(0); });
+$("tabBtn1").addEventListener("click", function() { switchTab(1); });
+$("tabBtn2").addEventListener("click", function() { switchTab(2); });
+$("goQuizFromStudyBtn").addEventListener("click", function() { switchTab(0); });
+
+// Init
+buildStudyCards();
+startQuizRound();
+newTriQuestion();
+
+var rzTimer = 0;
+window.addEventListener("resize", function() {
+  clearTimeout(rzTimer);
+  rzTimer = setTimeout(function() {
+    if (!$("panel1").hidden) renderStudyCanvases();
+    if (!$("panel2").hidden) renderTriQuizCanvas(triQuiz.done);
+  }, 80);
+});
+
+})();
+</script>
+</body>
+</html>
