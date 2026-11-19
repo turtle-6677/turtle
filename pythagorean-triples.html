@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>피타고라스 수 4쌍 완벽 암기 퀴즈</title>
+<title>중2 필수 피타고라스 수 완벽 암기 퀴즈</title>
 <style>
 :root{
   --ink:#1c2540; --sub:#5b6680; --line:#dfe4ee; --paper:#f6f4ee; --card:#ffffff;
@@ -329,15 +329,15 @@ section.panel[hidden]{display:none}
 <body>
 <div class="wrap">
   <header>
-    <h1>📐 피타고라스 수 4쌍 완벽 암기 퀴즈</h1>
-    <p>숫자 하나만 봐도 피타고라스 수 세 쌍이 0.1초 만에 튀어나오게 연습해 보세요!</p>
+    <h1>📐 중2 필수 피타고라스 수 완벽 암기 퀴즈</h1>
+    <p>숫자 하나만 봐도 짝꿍이 되는 피타고라스 수(세 수)가 0.1초 만에 튀어나오게 연습해 보세요!</p>
     <div class="nav-tabs" role="tablist">
       <button class="nav-tab" role="tab" id="tabBtn0" aria-selected="true">
-        🎯 숫자 보고 쌍 적기
+        🎯 숫자 보고 답 적기
         <span class="sub">핵심 암기 퀴즈</span>
       </button>
       <button class="nav-tab" role="tab" id="tabBtn1" aria-selected="false">
-        📖 4쌍 암기 카드
+        📖 필수 암기 카드
         <span class="sub">먼저 외우기 & 정리표</span>
       </button>
       <button class="nav-tab" role="tab" id="tabBtn2" aria-selected="false">
@@ -350,13 +350,13 @@ section.panel[hidden]{display:none}
   <!-- ==================== TAB 0: CORE QUIZ ==================== -->
   <section class="panel" id="panel0">
     <div class="study-toggle-bar">
-      <span>💡 시작 전 4가지 쌍을 먼저 확인하고 싶다면?</span>
-      <button class="btn-sm" id="toggleCheatBtn">📖 4쌍 요약표 보기</button>
+      <span>💡 시작 전 시험에 나오는 필수 4가지 조합을 먼저 확인하고 싶다면?</span>
+      <button class="btn-sm" id="toggleCheatBtn">📖 필수 요약표 보기</button>
     </div>
 
     <div class="cheat-box" id="cheatBox" hidden>
       <div style="font-size:13.5px;font-weight:700;color:var(--purple)">
-        외워야 할 피타고라스 수 4쌍 (퀴즈 입력을 시작하면 자동으로 닫혀요!)
+        중2 시험 필수 피타고라스 수 4가지 (퀴즈 입력을 시작하면 자동으로 닫혀요!)
       </div>
       <div class="cheat-grid">
         <div class="cheat-item">
@@ -480,8 +480,8 @@ section.panel[hidden]{display:none}
   <section class="panel" id="panel1" hidden>
     <div class="cards-header">
       <div>
-        <h2 style="margin:0;font-size:19px">📖 중2 필수 피타고라스 수 4쌍</h2>
-        <p style="margin:2px 0 0;font-size:13.5px;color:var(--sub)">카드를 누르면 가려진 숫자를 확인하며 암기할 수 있어요.</p>
+        <h2 style="margin:0;font-size:19px">📖 중2 필수 피타고라스 수 4가지</h2>
+        <p style="margin:2px 0 0;font-size:13.5px;color:var(--sub)">피타고라스 수는 무수히 많지만, 중2 시험에는 아래 4가지 기본 묶음이 가장 자주 출제돼요!</p>
       </div>
       <button type="button" class="btn-sm" id="blindToggleBtn">🙈 숫자 가리고 외우기</button>
     </div>
@@ -871,7 +871,7 @@ function hideCheatSheetOnPlay() {
   if (!cb.hidden) {
     cb.hidden = true;
     $("toggleCheatBtn").classList.remove("active");
-    $("toggleCheatBtn").textContent = "📖 4쌍 요약표 보기";
+    $("toggleCheatBtn").textContent = "📖 필수 요약표 보기";
   }
 }
 
@@ -1141,7 +1141,7 @@ $("toggleCheatBtn").addEventListener("click", function() {
   var cb = $("cheatBox");
   cb.hidden = !cb.hidden;
   this.classList.toggle("active", !cb.hidden);
-  this.textContent = cb.hidden ? "📖 4쌍 요약표 보기" : "🙈 요약표 닫기";
+  this.textContent = cb.hidden ? "📖 필수 요약표 보기" : "🙈 요약표 닫기";
 });
 
 $("restartQuizBtn").addEventListener("click", startQuizRound);
@@ -1152,7 +1152,7 @@ $("copyResultBtn").addEventListener("click", function() {
   var total = quizState.totalQuestions;
   var pct = Math.round((right / total) * 100);
   var missedList = Object.keys(quizState.missedNums);
-  var text = "[피타고라스 수 4쌍 암기 퀴즈 결과]\n" +
+  var text = "[중2 필수 피타고라스 수 암기 퀴즈 결과]\n" +
     "• 한 번에 맞힌 점수: " + right + "/" + total + " (" + pct + "%)\n" +
     "• 걸린 시간: " + sec + "초\n" +
     "• '5' 두 쌍(3,4,5/5,12,13) 찾기: " + (quizState.fiveSuccess ? "성공 💯" : "복습 완료") + "\n" +
