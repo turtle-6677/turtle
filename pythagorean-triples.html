@@ -893,10 +893,15 @@ function gcd(x, y) {
   return x;
 }
 
+function iga(n) {
+  return [0, 1, 3, 6, 7, 8].indexOf(Math.abs(Number(n)) % 10) !== -1 ? "이" : "가";
+}
+
 function findNonCoreValidPythagorean(target, groups, expectedKeys) {
   for (var i = 0; i < groups.length; i++) {
     var s = groups[i].slice().sort(function(a, b) { return a - b; });
     var a = s[0], b = s[1], c = s[2];
+    if (a !== target && b !== target && c !== target) continue;
     var key = s.join(",");
     if (expectedKeys.indexOf(key) !== -1) continue;
     if (a > 0 && (a * a + b * b === c * c)) {
@@ -904,8 +909,7 @@ function findNonCoreValidPythagorean(target, groups, expectedKeys) {
       return {
         a: a, b: b, c: c,
         g: g,
-        baseA: a / g, baseB: b / g, baseC: c / g,
-        hasTarget: (a === target || b === target || c === target)
+        baseA: a / g, baseB: b / g, baseC: c / g
       };
     }
   }
@@ -980,6 +984,23 @@ function checkQuizAnswer() {
   }
 
   var target = quizState.currentTarget;
+
+  // Block submission if any entered 3-number group does not contain the target number
+  var missingGroup = null;
+  for (var gi = 0; gi < parsed.groups.length; gi++) {
+    if (parsed.groups[gi].indexOf(target) === -1) {
+      missingGroup = parsed.groups[gi];
+      break;
+    }
+  }
+  if (missingGroup) {
+    fb.className = "feedback-box show warn";
+    fbTri.innerHTML = "";
+    fbTitle.innerHTML = "⚠️ (" + missingGroup.join(", ") + ")에는 숫자 " + target + iga(target) + " 없어요!";
+    fbDesc.innerHTML = "문제에 제시된 숫자 <b>" + target + "</b>" + iga(target) + " 반드시 포함된 세 수를 입력해 주세요.";
+    return;
+  }
+
   var expected = getExpectedTriples(target);
   var expectedKeys = expected.map(function(t) { return t.key; }).sort();
 
