@@ -606,7 +606,10 @@ function drawRightTriangle(canvas, a, b, c, highlightNum, opts) {
   ctx.clearRect(0, 0, w, h);
 
   // Visual proportions clamped so very skinny triangles like 7-24-25 still look crisp & readable
-  var ratio = a / b;
+  // Use opts.rawA / opts.rawB if a or b is a string placeholder like "x" or "?"
+  var numA = Number(opts.rawA !== undefined ? opts.rawA : a);
+  var numB = Number(opts.rawB !== undefined ? opts.rawB : b);
+  var ratio = (numA > 0 && numB > 0) ? (numA / numB) : 0.65;
   var vRatio = Math.max(0.42, Math.min(0.85, Math.pow(ratio, 0.55)));
   var padX = opts.mini ? 22 : 38;
   var padY = opts.mini ? 16 : 26;
@@ -1268,7 +1271,7 @@ function buildStudyCards() {
       card.classList.toggle("revealed");
       var cv = card.querySelector("canvas");
       var isRev = card.classList.contains("revealed");
-      drawRightTriangle(cv, t.nums[0], isRev ? t.nums[1] : "?", isRev ? t.nums[2] : "?", t.nums[0] === 5 || t.nums[2] === 5 ? 5 : undefined);
+      drawRightTriangle(cv, t.nums[0], isRev ? t.nums[1] : "?", isRev ? t.nums[2] : "?", t.nums[0] === 5 || t.nums[2] === 5 ? 5 : undefined, { rawA: t.nums[0], rawB: t.nums[1] });
     });
 
     grid.appendChild(card);
@@ -1286,7 +1289,8 @@ function renderStudyCanvases() {
       t.nums[0],
       show ? t.nums[1] : "?",
       show ? t.nums[2] : "?",
-      (t.nums.indexOf(5) !== -1) ? 5 : undefined
+      (t.nums.indexOf(5) !== -1) ? 5 : undefined,
+      { rawA: t.nums[0], rawB: t.nums[1] }
     );
   });
 }
@@ -1395,7 +1399,7 @@ function renderTriQuizCanvas(reveal) {
     if (idx === triQuiz.hideIdx) return reveal ? n : "x";
     return n;
   });
-  drawRightTriangle($("triQuizCanvas"), sides[0], sides[1], sides[2], reveal ? triQuiz.ans : "x");
+  drawRightTriangle($("triQuizCanvas"), sides[0], sides[1], sides[2], reveal ? triQuiz.ans : "x", { rawA: t.nums[0], rawB: t.nums[1] });
 }
 
 $("triNextBtn").addEventListener("click", newTriQuestion);
