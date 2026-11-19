@@ -673,15 +673,16 @@ function drawRightTriangle(canvas, a, b, c, highlightNum, opts) {
     if (isHi) {
       var tw = ctx.measureText(text).width;
       var bx = align === "right" ? lx - tw - 5 : (align === "left" ? lx - 5 : lx - tw / 2 - 5);
-      ctx.fillStyle = val === "x" ? "#faf5ff" : "#fff7ed";
-      ctx.strokeStyle = val === "x" ? "#7c3aed" : "#ea580c";
+      var isGreen = (val !== "x" && opts.hiStyle !== "orange");
+      ctx.fillStyle = val === "x" ? "#faf5ff" : (isGreen ? "#ecfdf5" : "#fff7ed");
+      ctx.strokeStyle = val === "x" ? "#7c3aed" : (isGreen ? "#059669" : "#ea580c");
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.roundRect ? ctx.roundRect(bx, ly - fontSize * 0.65, tw + 10, fontSize * 1.3, 6)
                     : ctx.rect(bx, ly - fontSize * 0.65, tw + 10, fontSize * 1.3);
       ctx.fill();
       ctx.stroke();
-      ctx.fillStyle = val === "x" ? "#7c3aed" : "#ea580c";
+      ctx.fillStyle = val === "x" ? "#7c3aed" : (isGreen ? "#059669" : "#ea580c");
     } else {
       ctx.fillStyle = "#1c2540";
     }
